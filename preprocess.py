@@ -4,7 +4,9 @@ import os
 import scipy
 from scipy.ndimage.morphology import generate_binary_structure
 from argparse import ArgumentParser 
+from timeit import default_timer as timer
 import matplotlib.pyplot as plt
+
 """
 A simple preprocessing script for neuron images provided by Dr Ed Ruthazer; the script uses the scripy.morphology
 package to parse images into binary structures, separating the image into connected component structures. We assume
@@ -29,26 +31,37 @@ def main(args):
 			input_list.remove(item)
 	if not input_list:
 		print("Error! No files in input directory ", args.input)
-	sample_image = io.imread(input_list[1])
-	image_array = np.zeros((len(input_list), sample_image.shape[0], sample_image.shape[1], sample_image.shape[2]))
+
+	# Get sample image to extract image dimensions
+	min_depth = 200
+	for item in input_list:
+		sample_image = io.imread(item)
+		depth = sample_image.shape[0]
+		if depth < min_depth:
+			min_depth = depth
+	print('Smallest image depth is ', min_depth)
+	image_array = np.zeros((len(input_list), min_depth, sample_image.shape[1], sample_image.shape[2]))
+
 	# Now create an image array that is [number of images x height x length x width]
 	for idx, file_name in enumerate(input_list):
 		single_image = io.imread(file_name)
 		min_nonzero = (np.min(single_image[single_image > 0]))
 		max_nonzero = (np.max(single_image))
 		threshold = min_nonzero + (max_nonzero * 1/80)
-		single_image[single_image < threshold] = 0
-		image_array[idx] = single_image
+		single_image[single_image < 390] = 0
+		image_array[idx, :,:,:] = single_image[:min_depth, :, :]
 
 	# Ensure data is in uint16 format
-	image_array = image_array.view(np.uint16)
-
+	print(image_array.shape)
+	image_array = image_array.astype(np.uint16)
+	print(image_array.shape)
 	# Now we'll be writing to output directory
 	os.chdir(args.output)
 
 	# Defines a binary structure describing connectivity of structures in image
 	s = generate_binary_structure(3,3)
 	print('Cleaning images (might take a few minutes)...')
+	start = timer()
 	for input_idx in range(len(input_list)):
 		image = image_array[input_idx]
 		label, nb_features = scipy.ndimage.label(image, structure=s)
@@ -70,7 +83,7 @@ def main(args):
 				image[label == i] = 0
 
 		io.imsave('cleaned_image' + '_' + str(input_idx) + '.tiff', image)
-		print("Done image {} of {}".format(input_index + 1, len(input_list)))
+		print("Done image {} of {}  {:.2f}m".format(input_idx + 1, len(input_list), (timer()-start)/60))
 
 	print('Done writing {} images to {}'.format(len(input_list), args.output))
 
