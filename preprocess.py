@@ -6,6 +6,8 @@ from scipy.ndimage.morphology import generate_binary_structure
 from argparse import ArgumentParser 
 from timeit import default_timer as timer
 import matplotlib.pyplot as plt
+import cv2
+warnings.filterwarnings("ignore", category=UserWarning)
 
 """
 A simple preprocessing script for neuron images provided by Dr Ed Ruthazer; the script uses the scripy.morphology
@@ -27,7 +29,7 @@ def main(args):
 
 	# Remove anything non .tif from folder
 	for item in input_list:
-		if not item.endswith('.tif'):
+		if not item.endswith('.tif') and not item.endswith('.tiff'):
 			input_list.remove(item)
 	if not input_list:
 		print("Error! No files in input directory ", args.input)
@@ -52,10 +54,11 @@ def main(args):
 		image_array[idx, :,:,:] = single_image[:min_depth, :, :]
 
 	# Ensure data is in uint16 format
-	print(image_array.shape)
 	image_array = image_array.astype(np.uint16)
-	print(image_array.shape)
-	# Now we'll be writing to output directory
+
+	# Now we'll be writing to output directory. Make directory if it doesn't exist
+	if not os.path.isdir(args.output):
+		os.mkdir(args.output)
 	os.chdir(args.output)
 
 	# Defines a binary structure describing connectivity of structures in image
@@ -81,6 +84,10 @@ def main(args):
 			nb_vox = np.sum(image[label == i])
 			if nb_vox < nvox:
 				image[label == i] = 0
+
+		# Now try normalizing the image:
+		image=cv2.normalize(image,None,0,65535,cv2.NORM_MINMAX)
+		print("image max is now: ", np.max(image))
 
 		io.imsave('cleaned_image' + '_' + str(input_idx) + '.tiff', image)
 		print("Done image {} of {}  {:.2f}m".format(input_idx + 1, len(input_list), (timer()-start)/60))

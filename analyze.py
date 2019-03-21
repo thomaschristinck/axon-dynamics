@@ -36,6 +36,11 @@ def main(args):
 	# Get a sorted list of the input files
 	file_list = sorted(os.listdir(args.input))
 	superimposed_list = [item for item in file_list if item.startswith('superimposed')]
+
+	# Make sure we're looking in the right directory
+	if len(superimposed_list) == 0:
+		raise LookupError("Couldn't find superimposed images. Make sure you have correctly run the registration_macro.java file and that" \
+			+ " you have correctly specified the input directory (flagged by -i)")
 	superimposed_list.sort(key=sort_superimposed)
 
 	# Make output folders
@@ -52,7 +57,7 @@ def main(args):
 	normalized_growth = []
 	normalized_loss = []
 	normalized_activity = []
-	thresh_factor = 1/5
+	thresh_factor = 1/6
 
 	# Now iterate through all files
 	for idx, item in enumerate(superimposed_list):
@@ -110,8 +115,8 @@ def main(args):
 		# Save matrices representing unique growth/loss
 		loss_string = "%s/Results/loss%d.tiff" % (args.output, idx)
 		growth_string = "%s/Results/growth%d.tiff" % (args.output, idx)
-		io.imsave(growth_string , mat1_unique)
-		io.imsave(loss_string, mat2_unique)
+		io.imsave(loss_string, mat1_unique)
+		io.imsave(growth_string, mat2_unique)
 
 		# For statistical purposes we consider all unique growth areas/loss areas
 		# to have the same magnitude
