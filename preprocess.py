@@ -7,14 +7,16 @@ from argparse import ArgumentParser
 from timeit import default_timer as timer
 import matplotlib.pyplot as plt
 import cv2
+import warnings
 warnings.filterwarnings("ignore", category=UserWarning)
 
 """
-A simple preprocessing script for neuron images provided by Dr Ed Ruthazer; the script uses the scripy.morphology
+A simple preprocessing script for neuron images provided by Ed Ruthazer; the script uses the scripy.morphology
 package to parse images into binary structures, separating the image into connected component structures. We assume
-here that the largest connected structure is the axon of interest, which is usually true except for cases where there 
-are large artifacts in the image. The processed images are then coregistered using ImageJ and then thresholded to 
-produce maps of locations along the axon that see the most dynamic behavior - i.e. branches extending and retracting.
+here that the largest connected structure is the axon of interest, which should be true except for cases where there 
+are large artifacts in the image. The processed images are then coregistered using ImageJ (registration_macro.java) 
+and then thresholded to produce maps of locations along the axon that see the most dynamic behavior - i.e. branches 
+extending and retracting (analyze.py).
 
 See usage below
 
@@ -34,8 +36,8 @@ def main(args):
 	if not input_list:
 		print("Error! No files in input directory ", args.input)
 
-	# Get sample image to extract image dimensions
-	min_depth = 200
+	# Get sample image to extract image dimensions. Have to ensure that all images
+	min_depth = 500
 	for item in input_list:
 		sample_image = io.imread(item)
 		depth = sample_image.shape[0]
@@ -43,14 +45,15 @@ def main(args):
 			min_depth = depth
 	print('Smallest image depth is ', min_depth)
 	image_array = np.zeros((len(input_list), min_depth, sample_image.shape[1], sample_image.shape[2]))
+	print('Image size:', image_array.shape)
 
 	# Now create an image array that is [number of images x height x length x width]
 	for idx, file_name in enumerate(input_list):
 		single_image = io.imread(file_name)
 		min_nonzero = (np.min(single_image[single_image > 0]))
 		max_nonzero = (np.max(single_image))
-		threshold = min_nonzero + (max_nonzero * 1/80)
-		single_image[single_image < 390] = 0
+		threshold = min_nonzero + (max_nonzero * 1/80) #Get rid of some background
+		single_image[single_image < threshold] = 0
 		image_array[idx, :,:,:] = single_image[:min_depth, :, :]
 
 	# Ensure data is in uint16 format
@@ -67,30 +70,22 @@ def main(args):
 	start = timer()
 	for input_idx in range(len(input_list)):
 		image = image_array[input_idx]
+		#Group image into connected regions - we're interested in the biggest region
 		label, nb_features = scipy.ndimage.label(image, structure=s)
 		largest_group = 0
-		group_label = 0
-
-		# Find the largest structure in the image 
-		for i in range(1, nb_features + 1):
-			nb_vox = np.sum(image[label == i])
-			if nb_vox > largest_group:
-				largest_group = nb_vox
-
-		# Now, we assume that the largest coherent group is the axon
-		# we're looking at, not the noise
-		nvox = largest_group
-		for i in range(1, nb_features + 1):
-			nb_vox = np.sum(image[label == i])
-			if nb_vox < nvox:
-				image[label == i] = 0
-
-		# Now try normalizing the image:
+		#Get the counts for each label, then, find label with largest count
+		unique, counts = np.unique(label, return_counts=True)
+		largest_index = unique[np.argmax(counts[1:]) + 1]
+		largest_struct = np.max(counts[1:])
+		largest_group = np.sum(image[label == largest_index])
+		image[label != largest_index] = 0
+		# Now normalize the image:
 		image=cv2.normalize(image,None,0,65535,cv2.NORM_MINMAX)
-		print("image max is now: ", np.max(image))
-
+		# Save
 		io.imsave('cleaned_image' + '_' + str(input_idx) + '.tiff', image)
-		print("Done image {} of {}  {:.2f}m".format(input_idx + 1, len(input_list), (timer()-start)/60))
+	
+		if input_idx % 5 == 0 and input_idx != 0:
+			print("Done image {} of {}  {:.2f}m".format(input_idx + 1, len(input_list), (timer()-start)/60))
 
 	print('Done writing {} images to {}'.format(len(input_list), args.output))
 

@@ -57,7 +57,7 @@ def main(args):
 	normalized_growth = []
 	normalized_loss = []
 	normalized_activity = []
-	thresh_factor = 1/6
+	thresh_factor = 1/8
 
 	# Now iterate through all files
 	for idx, item in enumerate(superimposed_list):
