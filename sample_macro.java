@@ -1,8 +1,12 @@
 // Fiji Macro for co-registration
-// Specify ouput directory here (e.g. /User/yourname/data/registration)
-out_dir = "/Users/thomaschristinck/Desktop/deformations"
+
+// ****************** CHANGE THIS SECTION ****************************
+//Specify ouput directory here (e.g. /User/yourname/data/registration)
+out_dir = "/some/path"
 //Specify number of cleaned images to be registered
 nb_images = 12
+// *******************************************************************
+
 for (i = 0; i < nb_images; i++) {
 	moving = i + 1;
 	target = i;

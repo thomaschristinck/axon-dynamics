@@ -57,7 +57,7 @@ def main(args):
 	normalized_growth = []
 	normalized_loss = []
 	normalized_activity = []
-	thresh_factor = 1/8
+	thresh_factor = 1/10
 
 	# Now iterate through all files
 	for idx, item in enumerate(superimposed_list):
@@ -118,10 +118,7 @@ def main(args):
 		io.imsave(loss_string, mat1_unique)
 		io.imsave(growth_string, mat2_unique)
 
-		# For statistical purposes we consider all unique growth areas/loss areas
-		# to have the same magnitude
-		#mat1_unique[np.where(mat1_unique != 0)] = 1
-		#mat2_unique[np.where(mat2_unique != 0)] = 1
+		# Now, normalize the two images (growth and loss) for statistical purposes
 		mat1_unique = mat1_unique / np.max(mat1_unique)
 		mat2_unique = mat2_unique / np.max(mat2_unique)
 		total_add = np.sum(mat2_unique)

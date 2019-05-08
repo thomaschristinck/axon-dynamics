@@ -1,4 +1,4 @@
-# Axon Dynamixs
+# Axon Dynamics
 
 ### Setting up Python and a Python Environment
 
@@ -24,10 +24,14 @@ requirements.txt```
 
 ### Usage
 
-1. Set up a directory with the images you want to analyze. Open the terminal (on mac/linux machine) and type ```mkdir /directory/inputs``` where "directory" is some directory that you're going to do the processing in, and "inputs" is the folder where you should put your input .tiff images. Similarly, create a folder for preprocessed outputs ```mkdir /directory/outputs```
+1. Clone this repository by entering ```git clone https://github.com/thomaschristinck/axon-dynamics.git``` in the terminal (on mac/linux machine) in a directory of your chosing. Or download zip [here](https://github.com/thomaschristinck/axon-dynamics).
 
-2. Now that you have everything set up, preprocess the images as ```python3 preprocess.py -i /path/to/folder/with/tiffimages -o /path/to/folder/for/outputs```. See the file "preprocess.py" for more info on this step. Running this file should take no more than a few minutes.
+2. Set up a directory with the images you want to analyze. Type ```mkdir /directory/inputs``` where "directory" is some directory that you're going to do the processing in, and "inputs" is the folder where you should put your input .tiff images. Similarly, create a folder for preprocessed outputs ```mkdir /directory/outputs```
 
-3. Next, co-register all the processed images from 2 (above) with FIJI. To do this, you want to select all the images in your "outputs" folder and drag them to Fiji to open them. In the FIJI menu, navigate to ```Plugins > Macros > Startup Macros...```. Copy and paste the contents of the ```sample_macro.java``` file into this window, and modify the "out_dir" and "nb_images" variables at the top of the .ijm file. Then click "RUN". This will take quite a while for FIJI to do, around 4 minutes per image. You can play around with the registration on Line 16 of the FIJI macro (e.g. change the tolerance to make the registration run faster, or the stop level)
+3. Now that you have everything set up, preprocess the images as ```python3 preprocess.py -i /path/to/folder/with/tiffimages -o /path/to/folder/for/outputs```. See the file "preprocess.py" for more info on this step. Running this file should take no more than a few minutes.
 
-4. Now, you should have a bunch of coregistered images called "superimposed_x_y.tiff" in the folder specified by the "out_dir" variable in step 3. We want to analyze the growth/loss between these registered images. This is why the registration step in 3 is important. Analyze the images by entering ```python3 analyze.py -i /path/to/folder/with/superimposed/images/from3 -o /path/to/folder/for/analysisoutputs```. See the file "analyze.py" for more info on this step. Running this file should take a minute or two. 
+4. Next, co-register all the processed images from 3 (above) with FIJI. To do this, you want to select all the images in your "outputs" folder and drag them to FIJI to open them. In the FIJI menu, navigate to ```Plugins > Macros > Startup Macros...```. Copy and paste the contents of the ```sample_macro.java``` file into this window, and modify the "out_dir" and "nb_images" variables at the top of the .ijm file. Then click "RUN". This will take quite a while for FIJI to do, around 4 minutes per image. You might want to play around with the registration on Line 16 of the FIJI macro (e.g. change the tolerance to make the registration run faster, or the stop level).
+
+5. Now, you should have a bunch of coregistered images called "superimposed_x_y.tiff" in the folder specified by the "out_dir" variable in step 4. We want to analyze the growth/loss between these registered images. This is why the registration step in 4 is important. Analyze the images by entering ```python3 analyze.py -i /path/to/folder/with/superimposed/images/from4 -o /path/to/folder/for/analysis```. See the file "analyze.py" for more info on this step. Running this file should take a minute or two. 
+
+The analysis folder you specify in step 5 should have a "Plots" folder and a "Results" folder. I find whether or not the plots are coherent depends on what the images look like. The results generally make more sense. I like to visualize the results by opening growth and loss images (e.g. "growth1.tiff and loss1.tiff") as well as the corresponding preprocessed image from step 3 (e.g. "cleaned_image_1.tiff"). In the FIJI menu, navigate to ```Image > Color > Merge Channels...``` and select "loss1.tiff" as red, "growth1.tiff" as green, and "cleaned_image_1.tiff" as blue.
