@@ -2,18 +2,16 @@
 
 ### Setting up Python and a Python Environment
 
-1. Set up a directory with the images you want to analyze. Open the terminal (on mac/linux machine) and type ```mkdir /directory/inputs``` where "directory" is some directory that you're going to do the processing in, and "inputs" is the folder where you should put your input .tiff images. Similarly, create a folder for preprocessed outputs ```mkdir /directory/outputs```
-
-2. You need to have python3 on your computer. You can check by entering ```python3``` in the terminal - you should see the python version you're using displayed and a >>> command prompt. If you see something like "COMMAND NOT FOUND", you'll have to install python3. I'm pretty sure Macs come with python 2.7, so you might have to install python3 - I think the Hitchikers Guide to 
+1. You need to have python3 on your computer. You can check by entering ```python3``` in the terminal - you should see the python version you're using displayed and a >>> command prompt. If you see something like "COMMAND NOT FOUND", you'll have to install python3. I'm pretty sure Macs come with python 2.7, so you might have to install python3 - I think the Hitchikers Guide to 
 Python (Installation Guide) for [mac](https://docs.python-guide.org/starting/install3/osx/) or [linux](https://docs.python-guide.org/starting/install3/linux/) are good. 
 
-3. Python uses a lot of different packages, so it's important to have a package manager, like "pip". If you followed the python3 installation above, you already have pip. If you don't have pip installed, you'll get a "COMMAND NOT FOUND" error when you type "pip" into the terminal and
+2. Python uses a lot of different packages, so it's important to have a package manager, like "pip". If you followed the python3 installation above, you already have pip. If you don't have pip installed, you'll get a "COMMAND NOT FOUND" error when you type "pip" into the terminal and
 press "ENTER". Check [here](https://pip.pypa.io/en/stable/installing/#installing-with-get-pip-py) for information 
 on installing pip.
 
-4. Now, you want to set up a virtual environment to manage you packages. [This](https://docs.python-guide.org/dev/virtualenvs/#lower-level-virtualenv) tutorial walks through installing venv (which is pretty straightforward if you have pip installed). To create a virtual environment, enter ```virtualenv --python=python3 venv_name``` in the terminal. Then, enter ```source venv_name/bin/activate``` to activate your virtual environment. Here "venv_name" is whatever you choose to name your virtual environment (like "py35" or "pyaxon-dynamics"). 
+3. Now, you want to set up a virtual environment to manage you packages. [This](https://docs.python-guide.org/dev/virtualenvs/#lower-level-virtualenv) tutorial walks through installing venv (which is pretty straightforward if you have pip installed). To create a virtual environment, enter ```virtualenv --python=python3 venv_name``` in the terminal. Then, enter ```source venv_name/bin/activate``` to activate your virtual environment. Here "venv_name" is whatever you choose to name your virtual environment (like "py35" or "pyaxon-dynamics"). 
 
-5. You can install the required packages by navigating to this folder 
+4. You can install the required packages by navigating to this folder 
 (enter ```cd /pathway/to/axon-dynamics-code``` in the terminal), and entering ```pip3 install -r 
 requirements.txt```
 

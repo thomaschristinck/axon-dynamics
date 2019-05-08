@@ -11,7 +11,7 @@ import warnings
 warnings.filterwarnings("ignore", category=UserWarning)
 
 """
-A simple preprocessing script for neuron images provided by Ed Ruthazer; the script uses the scripy.morphology
+A simple preprocessing script for axon images provided by Ed Ruthazer; the script uses the scripy.morphology
 package to parse images into binary structures, separating the image into connected component structures. We assume
 here that the largest connected structure is the axon of interest, which should be true except for cases where there 
 are large artifacts in the image. The processed images are then coregistered using ImageJ (registration_macro.java) 
@@ -21,7 +21,7 @@ extending and retracting (analyze.py).
 See usage below
 
 Author: Thomas Christinck
-Feb 2019
+2019
 """
 
 def main(args):

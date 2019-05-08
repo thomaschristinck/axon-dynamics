@@ -11,9 +11,9 @@ import warnings
 warnings.filterwarnings("ignore", category=UserWarning)
 
 """
-An analyzer script for neuron images provided by Dr Ed Ruthazer; the script assumes images have been preprocessed (see
-preprocess.py and registered correctly using the sample_macro.java script provided (see instructions in the README in
-this repository; or see sample_macro.java)).
+An analyzer script for axon images provided by Dr Ed Ruthazer; the script assumes images have been preprocessed (see
+preprocess.py) and registered correctly using the sample_macro.java script provided (see instructions in the README in
+this repository; also see sample_macro.java)).
 This script simply subtracts the overlap between two timepoints, applies a threshold, and counts pixels that have seen 
 significant change from one time point to another (i.e. regions of growth or loss). The script produces files in the 
 output directory specified when the script is run as follows:
@@ -29,7 +29,7 @@ output (folder specified by -output; see usage below)
 See usage below (at bottom of this script)
 
 Author: Thomas Christinck
-Feb 2019
+2019
 """
 
 def main(args):
