@@ -22,7 +22,7 @@ requirements.txt```
 
 2. Set up a directory with the images you want to analyze. Type ```mkdir /directory/inputs``` where "directory" is some directory that you're going to do the processing in, and "inputs" is the folder where you should put your input .tiff images. Similarly, create a folder for preprocessed outputs ```mkdir /directory/outputs```
 
-3. Now that you have everything set up, preprocess the images as ```python3 preprocess.py -i /path/to/folder/with/tiffimages -o /path/to/folder/for/outputs```. See the file "preprocess.py" for more info on this step. Running this file should take no more than a few minutes.
+3. Now that you have everything set up, preprocess the images as ```python3 preprocess.py -i /path/to/folder/for/inputs -o /path/to/folder/for/outputs```. See the file "preprocess.py" for more info on this step. Running this file should take no more than a few minutes.
 
 4. Next, co-register all the processed images from 3 (above) with FIJI. To do this, you want to select all the images in your "outputs" folder and drag them to FIJI to open them. In the FIJI menu, navigate to ```Plugins > Macros > Startup Macros...```. Copy and paste the contents of the ```sample_macro.java``` file into this window, and modify the "out_dir" and "nb_images" variables at the top of the .ijm file. Then click "RUN". This will take quite a while for FIJI to do, around 4 minutes per image. You might want to play around with the registration on Line 16 of the FIJI macro (e.g. change the tolerance to make the registration run faster, or the stop level).
 
