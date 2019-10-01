@@ -84,7 +84,7 @@ def main(args):
 		# Save
 		io.imsave('cleaned_image' + '_' + str(input_idx) + '.tiff', image)
 	
-		if input_idx % 5 == 0 and input_idx != 0:
+		if input_idx % 4 == 0 and input_idx != 0:
 			print("Done image {} of {}  {:.2f}m".format(input_idx + 1, len(input_list), (timer()-start)/60))
 
 	print('Done writing {} images to {}'.format(len(input_list), args.output))

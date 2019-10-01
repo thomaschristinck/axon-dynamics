@@ -2,7 +2,8 @@
 
 // ****************** CHANGE THIS SECTION ****************************
 //Specify ouput directory here (e.g. /User/yourname/data/registration)
-out_dir = "/some/path"
+//out_dir = "/some/path"
+out_dir = "/Users/thomaschristinck/Desktop/Ruthazer/deformations"
 //Specify number of cleaned images to be registered
 nb_images = 12
 // *******************************************************************
@@ -28,3 +29,15 @@ for (i = 0; i < nb_images; i++) {
 	close("Composite*");
 	close("Matrix*");
 }
+
+
+
+//selectWindow("superimposed_0_1.tif");
+//selectWindow("superimposed_3_4.tif");
+//run("Brightness/Contrast...");
+//setMinAndMax(0, 50);
+//setMinAndMax(0, 50);
+//setMinAndMax(0, 50);
+//run("Brightness/Contrast...");
+//setMinAndMax(0, 50);
+//run("Apply LUT", "stack");

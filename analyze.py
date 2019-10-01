@@ -33,6 +33,13 @@ Author: Thomas Christinck
 """
 
 def main(args):
+
+	# Variables to tune: thresh_factor discards all all voxels with magnitude less than 
+	# thresh_factor x maximum_voxel intensity; cluster_level considers only groups of growth/
+	# loss that are > cluster_level voxels
+	thresh_factor = 1/20
+	cluster_level = 100
+
 	# Get a sorted list of the input files
 	file_list = sorted(os.listdir(args.input))
 	superimposed_list = [item for item in file_list if item.startswith('superimposed')]
@@ -51,13 +58,11 @@ def main(args):
 	if not os.path.isdir(os.path.join(args.output, 'Plots')):
 		os.mkdir(os.path.join(args.output, 'Plots'))
 
-	# Initialize lists to be plotted; thresh_factor discards all all voxels with magnitude less than 
-	# thresh_factor x maximum_voxel intensity
+	# Initialize lists to be plotted
 	ratios = []
 	normalized_growth = []
 	normalized_loss = []
 	normalized_activity = []
-	thresh_factor = 1/10
 
 	# Now iterate through all files
 	for idx, item in enumerate(superimposed_list):
@@ -112,20 +117,54 @@ def main(args):
 		mat1_unique[mat1_unique < thresh1] = 0
 		mat2_unique[mat2_unique < thresh2] = 0
 
-		# Save matrices representing unique growth/loss
-		loss_string = "%s/Results/loss%d.tiff" % (args.output, idx)
-		growth_string = "%s/Results/growth%d.tiff" % (args.output, idx)
-		io.imsave(loss_string, mat1_unique)
-		io.imsave(growth_string, mat2_unique)
-
 		# Now, normalize the two images (growth and loss) for statistical purposes
-		mat1_unique = mat1_unique / np.max(mat1_unique)
-		mat2_unique = mat2_unique / np.max(mat2_unique)
-		total_add = np.sum(mat2_unique)
-		total_loss = np.sum(mat1_unique)
+		norm_mat1_unique = mat1_unique / np.max(mat1_unique)
+		norm_mat2_unique = mat2_unique / np.max(mat2_unique)
+		total_add = np.sum(norm_mat2_unique)
+		total_loss = np.sum(norm_mat1_unique)
 
 		if idx % 10 == 0 and idx != 0:
 			print('Done writing {} images to {}/Results'.format(idx, args.output))
+
+		#Group image into connected regions - we're interested in the biggest regions
+		s = generate_binary_structure(3,3)
+		label1, nb_features1 = scipy.ndimage.label(mat1_unique , structure=s)
+		label2, nb_features2 = scipy.ndimage.label(mat2_unique , structure=s)
+		
+		#Get the counts for each label, then, find labels with largest count
+		unique1, counts1 = np.unique(label1, return_counts=True)
+		unique2, counts2 = np.unique(label2, return_counts=True)
+		largest_indices1 = unique1[np.argwhere(counts1[1:] > cluster_level).flatten() + 1]
+		largest_indices2 = unique2[np.argwhere(counts2[1:] > cluster_level).flatten() + 1]
+	
+		# Set up multiplier matrices (0 everywhere except for large connected regions)
+		multiplier1 = np.zeros(np.shape(mat1_unique))
+		multiplier2 = np.zeros(np.shape(mat2_unique))
+		
+		for item in largest_indices1:
+			multiplier1[label1 == item] += 1
+		for item in largest_indices2:
+			multiplier2[label2 == item] += 1
+
+		# Now multiply the original images by the multiplier matrices (hopefully getting rid
+		# of some more noise)
+		filtered_mat1_unique = mat1_unique * multiplier1
+		filtered_mat2_unique = mat2_unique * multiplier2
+
+		# Now, normalize the two images (growth and loss) for statistical purposes
+		normf_mat1_unique = filtered_mat1_unique / np.max(filtered_mat1_unique)
+		normf_mat2_unique = filtered_mat2_unique / np.max(filtered_mat2_unique)
+		total_add = np.sum(normf_mat2_unique)
+		total_loss = np.sum(normf_mat1_unique)
+		
+		filtered_mat1_unique = filtered_mat1_unique.astype(np.uint16)
+		filtered_mat2_unique = filtered_mat2_unique.astype(np.uint16)
+			
+
+		loss_string = "%s/Results/loss%d.tiff" % (args.output, idx)
+		growth_string = "%s/Results/growth%d.tiff" % (args.output, idx)
+		io.imsave(loss_string, filtered_mat1_unique)
+		io.imsave(growth_string, filtered_mat2_unique)
 
 		# Update lists
 		if idx == 0:
@@ -151,6 +190,7 @@ def main(args):
 	plt.ylabel('Normalized Growth')
 	plt.legend()
 	plt.savefig(os.path.join(args.output, 'Plots', 'growth.jpeg'))
+
 
 
 def sort_superimposed(val): 
