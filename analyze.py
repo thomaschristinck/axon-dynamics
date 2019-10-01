@@ -117,15 +117,6 @@ def main(args):
 		mat1_unique[mat1_unique < thresh1] = 0
 		mat2_unique[mat2_unique < thresh2] = 0
 
-		# Now, normalize the two images (growth and loss) for statistical purposes
-		norm_mat1_unique = mat1_unique / np.max(mat1_unique)
-		norm_mat2_unique = mat2_unique / np.max(mat2_unique)
-		total_add = np.sum(norm_mat2_unique)
-		total_loss = np.sum(norm_mat1_unique)
-
-		if idx % 10 == 0 and idx != 0:
-			print('Done writing {} images to {}/Results'.format(idx, args.output))
-
 		#Group image into connected regions - we're interested in the biggest regions
 		s = generate_binary_structure(3,3)
 		label1, nb_features1 = scipy.ndimage.label(mat1_unique , structure=s)
@@ -151,7 +142,7 @@ def main(args):
 		filtered_mat1_unique = mat1_unique * multiplier1
 		filtered_mat2_unique = mat2_unique * multiplier2
 
-		# Now, normalize the two images (growth and loss) for statistical purposes
+		# Now, normalize the two images (growth and loss) for comparison purposes
 		normf_mat1_unique = filtered_mat1_unique / np.max(filtered_mat1_unique)
 		normf_mat2_unique = filtered_mat2_unique / np.max(filtered_mat2_unique)
 		total_add = np.sum(normf_mat2_unique)
@@ -165,6 +156,9 @@ def main(args):
 		growth_string = "%s/Results/growth%d.tiff" % (args.output, idx)
 		io.imsave(loss_string, filtered_mat1_unique)
 		io.imsave(growth_string, filtered_mat2_unique)
+
+		if idx % 10 == 0 and idx != 0:
+			print('Done writing {} images to {}/Results'.format(idx, args.output))
 
 		# Update lists
 		if idx == 0:
