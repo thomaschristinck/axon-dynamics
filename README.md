@@ -9,7 +9,7 @@ Python (Installation Guide) for [mac](https://docs.python-guide.org/starting/ins
 press "ENTER". Check [here](https://pip.pypa.io/en/stable/installing/#installing-with-get-pip-py) for information 
 on installing pip.
 
-3. Now, you want to set up a virtual environment to manage you packages. [This](https://docs.python-guide.org/dev/virtualenvs/#lower-level-virtualenv) tutorial walks through installing venv (which is pretty straightforward if you have pip installed). To create a virtual environment, enter ```virtualenv --python=python3 venv_name``` in the terminal. Then, enter ```source venv_name/bin/activate``` to activate your virtual environment. Here "venv_name" is whatever you choose to name your virtual environment (like "py35" or "pyaxon-dynamics"). 
+3. Now, you want to set up a virtual environment to manage your packages. [This](https://docs.python-guide.org/dev/virtualenvs/#lower-level-virtualenv) tutorial walks through installing venv (which is pretty straightforward if you have pip installed). To create a virtual environment, enter ```virtualenv --python=python3 venv_name``` in the terminal. Then, enter ```source venv_name/bin/activate``` to activate your virtual environment. Here "venv_name" is whatever you choose to name your virtual environment (like "py35" or "pyaxon-dynamics"). 
 
 4. You can install the required packages by navigating to this folder 
 (enter ```cd /pathway/to/axon-dynamics-code``` in the terminal), and entering ```pip3 install -r 
